@@ -72,14 +72,14 @@
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link mr-1"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                         View Syllabus
                     </a>
-                    <!-- <a href="FAQs.html" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center" style="margin-top:10px;">
+                    <a href="faqs/index.html" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center" style="margin-top:10px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link mr-1"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                         FAQs
-                    </a> -->
+                    </a>
                 </div>
             </div>
         </div>
-
+        
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
             <div class="bg-navy-card p-6 rounded-xl shadow-lg flex items-center justify-between">
                 <div class="flex items-center">
@@ -122,6 +122,12 @@
             </div>
         </div>
 
+        <div class="text-left mt-6">
+            <h3 class="text-xs font-semibold uppercase tracking-wider text-white-400 hover:text-white-300 transition duration-200 inline-flex items-center" style="margin-bottom:10px;">
+                * Note: Progress may take upto 12 hours to update
+            </h3>
+        </div>
+        
         <!-- Progress Table -->
         <div class="overflow-x-auto rounded-xl shadow-2xl">
             <table class="min-w-full divide-y divide-gray-700">
@@ -144,12 +150,16 @@
 
         <!-- Pagination Controls -->
         <div class="flex justify-center items-center mt-6 space-x-4">
-            <button id="prev-btn" onclick="changePage(-1)" class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
-                ← Previous
+            <button id="prev-btn" onclick="changePage(-1)" class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 px-2 rounded-lg transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed" style="border-radius: 100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="24" aria-hidden="true">
+                <path d="M18 4 L6 12 L18 20" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </button>
             <span id="page-info" class="text-gray-300 text-sm"></span>
-            <button id="next-btn" onclick="changePage(1)" class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 px-4 rounded-lg transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed">
-                Next →
+            <button id="next-btn" onclick="changePage(1)" class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 px-2 rounded-lg transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed" style="border-radius: 100%;">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="24" aria-hidden="true">
+                <path d="M6 4 L18 12 L6 20" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </button>
         </div>
         
@@ -342,4 +352,5 @@
     </script>
 </body>
 </html>
+
 
