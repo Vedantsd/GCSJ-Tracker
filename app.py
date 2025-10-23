@@ -24,9 +24,10 @@ def get_gcsb_profile_details(public_profile_url):
         badges.append(title.text.strip() if title else "Unknown Badge")
 
     completed, arcade_game, progress, percent = pc.progress(badges)
+    print(f"{name}'s progress - {percent} %")
 
     return {
-        "name": name,
+        "name": name.upper(),
         "skill_badges": completed,
         "arcade_game": arcade_game,
         "progress": progress, 
@@ -78,20 +79,17 @@ def write_to_google_sheet(sheet_name, data):
         print(f"✅ Added new entry for {data['name']}.")
 
 
-app = Flask(__name__)
-
-@app.route('/')
-def home():
-    with open('updated_entries.csv', encoding='utf-8-sig') as csv_file:
-        for url in csv_file:
-            profile_url = url.strip()
-            print(profile_url)
-            profile_data = get_gcsb_profile_details(profile_url)
-            print(profile_data)
-            write_to_google_sheet("GCSJ Tracker", profile_data)
-    return "Updating data"
-
-
 # =============== MAIN ===============
 if __name__ == "__main__":
-    app.run(debug=False, host='0.0.0.0', port=5000)
+    file2 = open('temp.csv', 'a')
+    with open('updated_entries.csv', encoding='utf-8-sig') as csv_file:
+        for url in csv_file:
+            try:
+                profile_url = url.strip()
+                #print(profile_url)
+                profile_data = get_gcsb_profile_details(profile_url)
+                #print(profile_data)
+                write_to_google_sheet("GCSJ Tracker", profile_data)
+            except Exception:
+                file2.write(url)
+                print('--------------------------------------------------------------------------------------------------------------------------------------------------')
