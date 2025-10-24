@@ -31,7 +31,6 @@
             background: #2a3447;
             border-radius: 10px;
         }
-        /* Custom scrollbar for the modal content */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
@@ -42,7 +41,10 @@
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background-color: #5b6272;
         }
-
+        .visible-scroll {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
     </style>
     <script>
         tailwind.config = {
@@ -126,7 +128,6 @@
             </div>
         </div>
 
-        <!-- Search Bar -->
         <div class="mb-8">
             <div class="relative">
                 <input type="text" id="search-input" placeholder="Search Your Name Here" class="w-full py-3 pl-12 pr-4 bg-navy-card border border-gray-700 rounded-xl focus:ring-blue-gemini focus:border-blue-gemini outline-none text-lg text-gray-200" onkeyup="filterParticipants()">
@@ -140,7 +141,6 @@
             </h3>
         </div>
 
-        <!-- Progress Table -->
         <div class="overflow-x-auto rounded-xl shadow-2xl">
             <table class="min-w-full divide-y divide-gray-700">
                 <thead class="bg-blue-header text-white">
@@ -160,36 +160,31 @@
             </table>
         </div>
 
-        <!-- Pagination Controls -->
-        <div class="flex justify-center items-center mt-6 space-x-4">
-            <button id="prev-btn" onclick="changePage(-1)" class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 px-2 rounded-lg transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed" style="border-radius: 100%;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="24" aria-hidden="true">
-                <path d="M18 4 L6 12 L18 20" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-            <span id="page-info" class="text-gray-300 text-sm"></span>
-            <button id="next-btn" onclick="changePage(1)" class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 px-2 rounded-lg transition duration-200 disabled:opacity-40 disabled:cursor-not-allowed" style="border-radius: 100%;">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30" height="24" aria-hidden="true">
-                <path d="M6 4 L18 12 L6 20" fill="none" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </button>
-        </div>
-        
         <div id="no-results" class="hidden text-center mt-8 p-6 bg-navy-card rounded-xl text-gray-400">
             No participants found matching your search.
         </div>
 
     </div>
 
-    <!-- JavaScript Logic -->
+    <button id="scroll-to-top" 
+        class="fixed bottom-6 right-6 p-3 bg-blue-gemini rounded-full text-white shadow-lg 
+            hover:bg-blue-gemini/80 transition duration-300 z-50 opacity-0 invisible" 
+        onclick="scrollToTop()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+            class="lucide lucide-arrow-up">
+            <path d="m5 12 7-7 7 7"/>
+            <path d="M12 19V5"/>
+        </svg>
+    </button>
+
     <script>
         const SHEET_ID = '1ugTNMqMcSP5TnraNffo95MKcmYx6E6sMGlcNNFWvVe8'; 
         const SHEET_NAME = 'Sheet1'; 
         const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
 
         let participantsData = []; 
-        let currentPage = 1;
-        const entriesPerPage = 10;
+        let filteredParticipantsData = []; 
 
         function parseSheetData(rawJsonText) {
             try {
@@ -213,7 +208,6 @@
                 });
             } catch (e) {
                 console.error("Error parsing sheet data:", e);
-                showMessageBox('Parsing Error', 'Failed to process data returned from the Google Sheet.');
                 return [];
             }
         }
@@ -224,10 +218,12 @@
                 const response = await fetch(API_URL);
                 const rawText = await response.text();
                 participantsData = parseSheetData(rawText);
+                filteredParticipantsData = participantsData; 
                 updateStats();
-                renderParticipants(participantsData);
+                renderParticipants(filteredParticipantsData);
                 document.getElementById('loading-row').style.display = 'none';
             } catch (error) {
+                console.error('Fetch error:', error);
                 document.getElementById('loading-row').innerHTML = '<td colspan="7" class="text-center py-8 text-lg text-red-400">Failed to load data.</td>';
             }
         }
@@ -244,20 +240,16 @@
                 noResults.classList.add('hidden');
             }
 
-            const startIndex = (currentPage - 1) * entriesPerPage;
-            const endIndex = startIndex + entriesPerPage;
-            const paginatedData = data.slice(startIndex, endIndex);
-
-            paginatedData.forEach((p, index) => {
+            data.forEach((p, index) => {
                 const row = document.createElement('tr');
                 const rowClass = index % 2 === 0 ? 'bg-row-dark hover:bg-row-light/70' : 'bg-row-light hover:bg-row-light/70';
                 row.className = `transition duration-150 ${rowClass}`;
+                
                 const progressValue = p.progress;
                 let progressDisplay = isNaN(parseInt(progressValue)) ? progressValue : `${progressValue} %`;
+                
                 let statusDisplay = p.completionStatus;
                 let statusColor = 'bg-yellow-600/30 text-yellow-300';
-                if (p.completionStatus.toLowerCase() === 'redeemed') statusColor = 'bg-green-600/30 text-green-300';
-                const buttonClass = 'bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-sm';
                 
                 const statusValue = p.completionStatus;
                 const numericStatusValue = parseInt(statusValue);
@@ -268,8 +260,11 @@
                         statusColor = 'bg-green-600/30 text-green-300';
                     }
                 } 
-                else if (statusValue && statusValue.toLowerCase() === 'redeemed') {
+                else if (statusValue && (statusValue.toLowerCase() === 'completed' || statusValue.toLowerCase() === 'redeemed')) {
                     statusColor = 'bg-green-600/30 text-green-300';
+                    if(statusValue.toLowerCase() === 'completed' && isNaN(parseInt(progressValue))) {
+                         progressDisplay = 'Completed'; 
+                    }
                 }
 
                 row.innerHTML = `
@@ -279,60 +274,38 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${p.arcadeGames}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${progressDisplay}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">${statusDisplay}</span></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><button class="${buttonClass}" onclick="viewDetails(${p.id}, '${p.name}')">View Details</button></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><button class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-sm" onclick="viewDetails(${p.id}, '${p.name.replace(/'/g, "\\'")}')">View Details</button></td>
                 `;
                 tbody.appendChild(row);
             });
-
-            updatePaginationInfo(data.length);
+            
         }
 
         function updateStats() {
-            const eligibleCount = participantsData.filter(p => p.completionStatus?.toLowerCase() === 'redeemed').length;
+            const eligibleCount = participantsData.filter(p => p.progress?.toLowerCase() === 'completed').length;
             document.getElementById('swag-eligible-count').textContent = eligibleCount;
             document.getElementById('total-participants-count').textContent = participantsData.length;
         }
 
         function filterParticipants() {
             const searchTerm = document.getElementById('search-input').value.toLowerCase().trim();
-            const filteredData = participantsData.filter(p => p.name.toLowerCase().includes(searchTerm));
-            currentPage = 1;
-            renderParticipants(filteredData);
+            filteredParticipantsData = participantsData.filter(p => p.name.toLowerCase().includes(searchTerm));
+            renderParticipants(filteredParticipantsData);
         }
 
-        function updatePaginationInfo(totalEntries) {
-            const totalPages = Math.ceil(totalEntries / entriesPerPage);
-            const pageInfo = document.getElementById('page-info');
-            const prevBtn = document.getElementById('prev-btn');
-            const nextBtn = document.getElementById('next-btn');
+        function viewDetails(id, name) {
+            const participant = participantsData.find(p => p.id === id);
+            if (participant) {
+                const display_name = name.toUpperCase();
+                const badgeHtml = participant.badges 
+                    ? participant.badges.split(';').map(b => `<li class="text-gray-300 mb-1 list-disc list-inside" style="margin-top:10px;">${b.trim()}</li>`).join('')
+                    : '<li class="text-gray-500 ">No badges completed yet.</li>';
+                
+                const gameHtml = participant.games 
+                    ? participant.games.split(';').map(b => `<li class="text-gray-300 mb-1 list-disc list-inside" style="margin-top:10px;">${b.trim()}</li>`).join('')
+                    : '<li class="text-gray-500 ">No games completed yet.</li>';
 
-            pageInfo.textContent = `Page ${currentPage} of ${totalPages}`;
-            prevBtn.disabled = currentPage === 1;
-            nextBtn.disabled = currentPage === totalPages || totalPages === 0;
-        }
-
-        function changePage(direction) {
-            const totalPages = Math.ceil(participantsData.length / entriesPerPage);
-            currentPage += direction;
-            if (currentPage < 1) currentPage = 1;
-            if (currentPage > totalPages) currentPage = totalPages;
-            renderParticipants(participantsData);
-        }
-
-function viewDetails(id, name) {
-    const participant = participantsData.find(p => p.id === id);
-    if (participant) {
-        const display_name = name.toUpperCase();
-        const badgeHtml = participant.badges 
-            ? participant.badges.split(';').map(b => `<li class="text-gray-300 mb-1 list-disc list-inside" style="margin-top:10px;">${b.trim()}</li>`).join('')
-            : '<li class="text-gray-500 ">No badges completed yet.</li>';
-        
-        const gameHtml = participant.games 
-            ? participant.games.split(';').map(b => `<li class="text-gray-300 mb-1 list-disc list-inside" style="margin-top:10px;">${b.trim()}</li>`).join('')
-            : '<li class="text-gray-500 ">No games completed yet.</li>';
-
-        const message = `
-
+                const message = `
 <div class="flex flex-col gap-1">
     <div class="pl-3 bg-red-800/50 rounded-md p-2"><strong>#</strong> ${id}</div>
     <div class="pl-3 bg-blue-800/50 rounded-md p-2"><strong>Name:</strong> ${display_name}</div>
@@ -343,16 +316,13 @@ function viewDetails(id, name) {
 <ul class="pl-5 mt-2 bg-cyan-800/50 rounded-md p-3">${badgeHtml}</ul>
 <strong>Completed Games:</strong>
 <ul class="pl-5 mt-2 bg-cyan-800/50 rounded-md p-3">${gameHtml}</ul>
-
 `;
 
-        showMessageBox('Participant Details', message);
-    } else {
-        showMessageBox('Error', 'Participant data not found.');
-    }
-}
-
-
+                showMessageBox('Participant Details', message);
+            } else {
+                showMessageBox('Error', 'Participant data not found.');
+            }
+        }
 
         function createMessageBox() {
             const boxHtml = `
@@ -386,6 +356,26 @@ function viewDetails(id, name) {
         window.onload = function() {
             createMessageBox();
             fetchGoogleSheetData();
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function toggleScrollToTopButton() {
+            const button = document.getElementById('scroll-to-top');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                button.classList.add('visible-scroll');
+            } else {
+                button.classList.remove('visible-scroll');
+            }
+        }
+
+        window.onscroll = function() {
+            toggleScrollToTopButton();
         };
     </script>
 </body>
