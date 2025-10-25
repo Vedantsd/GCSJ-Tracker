@@ -82,11 +82,11 @@
                 <div>
                     <h2 class="text-xl font-semibold text-gray-200">Google Developer Groups</h2>
                     <p class="text-sm text-gray-400 mb-2">On campus <span class="text-blue-gemini">MIT Academy of Engineering</span></p>
-                    <a href="syllabus/" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center">
+                    <a href="https://docs.google.com/spreadsheets/d/e/2PACX-1vRB406SGkUY4Q5jRqYBSZqRGfsK6MsESzdtbHaoXnYT3isC2CcBFrloYq3gcO61Gbw58qSw9RB4FXoM/pubhtml?gid=0&single=true" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link mr-1"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                         View Syllabus
                     </a>
-                    <a href="faqs/" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center" style="margin-top:10px;">
+                    <a href="faqs/index.html" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center" style="margin-top:10px;">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link mr-1"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
                         FAQs
                     </a>
@@ -242,9 +242,6 @@
 
             data.forEach((p, index) => {
                 const row = document.createElement('tr');
-                const rowClass = index % 2 === 0 ? 'bg-row-dark hover:bg-row-light/70' : 'bg-row-light hover:bg-row-light/70';
-                row.className = `transition duration-150 ${rowClass}`;
-                
                 const progressValue = p.progress;
                 let progressDisplay = isNaN(parseInt(progressValue)) ? progressValue : `${progressValue} %`;
                 
@@ -254,17 +251,22 @@
                 const statusValue = p.completionStatus;
                 const numericStatusValue = parseInt(statusValue);
 
+                let rowClass = '';
+
+                if (!isNaN(numericStatusValue) && numericStatusValue >= 100) {
+                    rowClass = 'bg-green-700 hover:bg-green-600';
+                } else {
+                    rowClass = index % 2 === 0 
+                        ? 'bg-row-dark hover:bg-row-light/70' 
+                        : 'bg-row-light hover:bg-row-light/70';
+                }
+
+                row.className = `transition duration-150 ${rowClass}`;
+
                 if (!isNaN(numericStatusValue) && String(numericStatusValue) === statusValue && statusValue !== '') {
                     statusDisplay = `${numericStatusValue} %`; 
-                    if (numericStatusValue >= 100) {
-                        statusColor = 'bg-green-600/30 text-green-300';
-                    }
-                } 
-                else if (statusValue && (statusValue.toLowerCase() === 'completed' || statusValue.toLowerCase() === 'redeemed')) {
+                } else if (statusValue && (statusValue.toLowerCase() === 'completed' || statusValue.toLowerCase() === 'redeemed')) {
                     statusColor = 'bg-green-600/30 text-green-300';
-                    if(statusValue.toLowerCase() === 'completed' && isNaN(parseInt(progressValue))) {
-                         progressDisplay = 'Completed'; 
-                    }
                 }
 
                 row.innerHTML = `
@@ -273,11 +275,20 @@
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${p.skillBadges}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${p.arcadeGames}</td>
                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-300">${progressDisplay}</td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm"><span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">${statusDisplay}</span></td>
-                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium"><button class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-sm" onclick="viewDetails(${p.id}, '${p.name.replace(/'/g, "\\'")}')">View Details</button></td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+                        <span class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${statusColor}">
+                            ${statusDisplay}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                        <button class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-sm"
+                            onclick="viewDetails(${p.id}, '${p.name.replace(/'/g, "\\'")}')">View Details</button>
+                    </td>
                 `;
+                
                 tbody.appendChild(row);
             });
+
             
         }
 
@@ -380,6 +391,3 @@
     </script>
 </body>
 </html>
-
-
-
