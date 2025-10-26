@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Cloud Study Jam Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="/src/cloud-logo.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .bg-dark-navy { background-color: #0d111c; }
+        .bg-navy-card { background-color: #161b22; }
+        .text-blue-gemini { color: #4285F4; }
+        .text-green-redeemed { color: #10b981; }
+        .bg-blue-header { background-color: #1d4ed8; }
+        .bg-row-dark { background-color: #38310c; } 
+        .bg-row-light { background-color: #4a4114; } 
+        .bg-admin-card { background-color: #2c0b4e; } 
+        .text-purple-admin { color: #9a67ea; } 
+
+        body {
+            background-color: #0d111c;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a3447;
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #3b4252;
+            border-radius: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: #5b6272;
+        }
+        .visible-scroll {
+            opacity: 1 !important;
+            visibility: visible !important;
+        }
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-navy': '#0d111c',
+                        'navy-card': '#161b22',
+                        'blue-gemini': '#4285F4',
+                        'green-redeemed': '#10b981',
+                        'blue-header': '#1d4ed8',
+                        'row-dark': '#38310c',
+                        'row-light': '#4a4114',
+                        'admin-card': '#2c0b4e', 
+                        'purple-admin': '#9a67ea', 
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-navy text-white min-h-screen">
+
+    <div id="app" class="max-w-7xl mx-auto p-4 md:p-8">
+
+        <header class="flex justify-between items-center pb-6 border-b border-gray-700 mb-8">
+            <h1 class="text-2xl md:text-3xl font-bold flex items-center">
+                <span class="text-purple-admin mr-2">
+                    <img src="/src/cloud-logo.png" alt="Cloud Logo" width="30px" height="30px" class="inline-block">
+                </span> 
+                GCSJ Admin Dashboard
+            </h1>
+        </header>
+
+        <div class="bg-navy-card p-6 rounded-xl shadow-lg flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+            <div class="flex items-start md:items-center">
+                <div class="w-10 h-10 mr-4">
+                    <img src="/src/cloud-code-logo.png" alt="Cloud Code Logo">
+                </div>
+                <div>
+                    <h2 class="text-xl font-semibold text-gray-200">Google Developer Groups</h2>
+                    <p class="text-sm text-gray-400 mb-2">On campus <span class="text-blue-gemini">MIT Academy of Engineering</span></p>
+                    <a href="syllabus/" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link mr-1"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                        View Syllabus
+                    </a>
+                    <a href="faqs/" target="_blank" class="text-xs font-semibold uppercase tracking-wider text-green-400 hover:text-green-300 transition duration-200 flex items-center" style="margin-top:10px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-external-link mr-1"><path d="M15 3h6v6"/><path d="M10 14L21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>
+                        FAQs
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-2xl font-bold mb-4 text-purple-admin border-b border-gray-700 pb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-bar-chart-3 mr-2">
+                <path d="M3 3v18h18"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>
+            </svg>
+            Key Metrics Overview
+        </h3>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+            
+            <div class="bg-admin-card p-6 rounded-xl shadow-lg flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="p-3 bg-purple-admin/20 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-star h-8 w-8 text-yellow-400 dark:text-yellow-300">
+                            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400 uppercase tracking-wider">Eligible for Swags</p>
+                        <p id="admin-swag-eligible-count" class="text-3xl font-bold text-green-300">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-admin-card p-6 rounded-xl shadow-lg flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="p-3 bg-purple-admin/20 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-activity h-8 w-8 text-cyan-400 dark:text-cyan-300">
+                            <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400 uppercase tracking-wider">Active Students</p>
+                        <p id="admin-active-students-count" class="text-3xl font-bold text-cyan-300">...</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-admin-card p-6 rounded-xl shadow-lg flex items-center justify-between">
+                <div class="flex items-center">
+                    <div class="p-3 bg-purple-admin/20 rounded-full mr-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-users h-8 w-8 text-purple-admin dark:text-purple-400">
+                            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <p class="text-sm text-gray-400 uppercase tracking-wider">Total Participants</p>
+                        <p id="admin-total-participants-count" class="text-3xl font-bold text-purple-admin">...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <h3 class="text-xl font-semibold mb-4 text-cyan-400 border-b border-gray-700 pb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-area-chart mr-2">
+                <path d="M3 3v18h18"/><path d="M7 15v3"/><path d="M12 10v8"/><path d="M17 6v12"/>
+            </svg>
+            Overall Progress Distribution
+        </h3>
+        <div id="progress-distribution" class="grid grid-cols-2 md:grid-cols-5 gap-4 mb-10">
+            <div id="progress-0-25" class="bg-navy-card p-4 rounded-lg text-center shadow-md"></div>
+            <div id="progress-26-50" class="bg-navy-card p-4 rounded-lg text-center shadow-md"></div>
+            <div id="progress-51-75" class="bg-navy-card p-4 rounded-lg text-center shadow-md"></div>
+            <div id="progress-76-99" class="bg-navy-card p-4 rounded-lg text-center shadow-md"></div>
+            <div id="progress-100" class="bg-navy-card p-4 rounded-lg text-center shadow-md"></div>
+        </div>
+        
+        <h3 class="text-xl font-semibold mb-4 text-green-300 border-b border-gray-700 pb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-check-circle-2 mr-2">
+                <circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>
+            </svg>
+            Completed Students (Syllabus Finished)
+        </h3>
+
+        <div class="overflow-x-auto rounded-xl shadow-2xl">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-green-700 text-white">
+                    <tr>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[5%]">#</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[25%]">Name</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[10%]">Badges</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[10%]">Games</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[10%]">Last online</th>
+                        <th scope="col" class="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[15%]">Public Profile</th>
+                        <th scope="col" class="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[15%]">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="completed-participant-list" class="divide-y divide-gray-800">
+                    <tr id="completed-loading-row"><td colspan="7" class="text-center py-4 text-gray-500">Loading data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+    <div id="message-box-overlay" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden transition-opacity duration-300 flex items-center justify-center p-4">
+        <div class="bg-navy-card rounded-xl p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
+            <h3 id="message-box-title" class="text-xl font-bold mb-4 border-b border-gray-700 pb-2"></h3>
+            <div id="message-box-content" class="text-gray-300 mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto pr-2 custom-scrollbar"></div>
+            <button id="message-box-close" class="w-full bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 rounded-lg transition duration-200">Close</button>
+        </div>
+    </div>
+
+    <button id="scroll-to-top" 
+        class="fixed bottom-6 right-6 p-3 bg-blue-gemini rounded-full text-white shadow-lg 
+            hover:bg-blue-gemini/80 transition duration-300 z-50 opacity-0 invisible" 
+        onclick="scrollToTop()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" 
+            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" 
+            class="lucide lucide-arrow-up">
+            <path d="m5 12 7-7 7 7"/>
+            <path d="M12 19V5"/>
+        </svg>
+    </button>
+
+    <script>
+        const SHEET_ID = '1ugTNMqMcSP5TnraNffo95MKcmYx6E6sMGlcNNFWvVe8'; 
+        const SHEET_NAME = 'Sheet1'; 
+        const API_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${SHEET_NAME}`;
+
+        let participantsData = []; 
+
+        function parseSheetData(rawJsonText) {
+            try {
+                const jsonStart = rawJsonText.indexOf('{');
+                const jsonEnd = rawJsonText.lastIndexOf('}');
+                const jsonString = rawJsonText.substring(jsonStart, jsonEnd + 1);
+                const data = JSON.parse(jsonString);
+                const rows = data.table.rows; 
+
+                return rows.map((row, index) => {
+                    const cells = row.c;
+                    const name = cells[0]?.v ? String(cells[0].v) : 'N/A';
+                    const skillBadges = cells[1]?.v ? Number(cells[1].v) : 0;
+                    const arcadeGames = cells[2]?.v ? Number(cells[2].v) : 0;
+                    const progress = cells[3]?.v ? String(cells[3].v) : '0'; 
+                    const completionStatus = cells[4]?.v ? String(cells[4].v) : 'Pending'; 
+                    const badges = cells[5]?.v ? String(cells[5].v) : ''; 
+                    const games = cells[6]?.v ? String(cells[6].v) : ''; 
+                    const lastOnline = cells[7]?.v ? String(cells[7].v) : '';
+                    const publicProfileUrl = cells[8]?.v ? String(cells[8].v) : ''; 
+
+                    return { id: index + 1, name, skillBadges, arcadeGames, progress, completionStatus, badges, games, lastOnline, publicProfileUrl };
+                });
+            } catch (e) {
+                console.error("Error parsing sheet data:", e);
+                return [];
+            }
+        }
+
+        async function fetchGoogleSheetData() {
+            document.getElementById('completed-loading-row').style.display = 'table-row';
+            try {
+                const response = await fetch(API_URL);
+                const rawText = await response.text();
+                participantsData = parseSheetData(rawText);
+                
+                renderAdminDashboard(participantsData);
+                updateProgressDistribution(participantsData);
+                
+                document.getElementById('completed-loading-row').style.display = 'none';
+
+            } catch (error) {
+                console.error('Fetch error:', error);
+                document.getElementById('completed-loading-row').innerHTML = '<td colspan="6" class="text-center py-4 text-red-400">Failed to load data.</td>';
+            }
+        }
+
+        window.viewDetails = function(id) {
+            const participant = participantsData.find(p => p.id === id);
+            if (participant) {
+                const display_name = participant.name.toUpperCase();
+                const badgeHtml = participant.badges 
+                    ? participant.badges.split(';').map(b => `<li class="text-gray-300 mb-1 list-disc list-inside" style="margin-top:10px;">${b.trim()}</li>`).join('')
+                    : '<li class="text-gray-500 ">No skill badges listed.</li>';
+                
+                const gameHtml = participant.games 
+                    ? participant.games.split(';').map(b => `<li class="text-gray-300 mb-1 list-disc list-inside" style="margin-top:10px;">${b.trim()}</li>`).join('')
+                    : '<li class="text-gray-500 ">No arcade games listed.</li>';
+
+                const message = `
+<div class="flex flex-col gap-2 p-2 bg-gray-800/50 rounded-md mb-4">
+    <div class="pl-3 bg-red-800/50 rounded-md p-2"><strong>Rank #</strong> ${id}</div>
+    <div class="pl-3 bg-blue-800/50 rounded-md p-2"><strong>Name:</strong> ${display_name}</div>
+    <div class="pl-3 bg-green-800/50 rounded-md p-2"><strong>Current Progress:</strong> ${participant.progress} %</div>
+    <div class="pl-3 bg-yellow-800/50 rounded-md p-2"><strong>Final Status:</strong> ${participant.completionStatus.toUpperCase()}</div>
+</div> 
+<h4 class="font-semibold text-white mt-4">Completed Skill Badges (${participant.skillBadges}):</h4>
+<ul class="pl-5 mt-2 bg-cyan-800/50 rounded-md p-3 max-h-40 overflow-y-auto custom-scrollbar">${badgeHtml}</ul>
+<h4 class="font-semibold text-white mt-4">Completed Arcade Games (${participant.arcadeGames}):</h4>
+<ul class="pl-5 mt-2 bg-cyan-800/50 rounded-md p-3 max-h-40 overflow-y-auto custom-scrollbar">${gameHtml}</ul>
+`;
+
+                showMessageBox('Participant Details', message);
+            } else {
+                showMessageBox('Error', 'Participant data not found.');
+            }
+        }
+
+        function renderAdminDashboard(data) {
+
+            const totalStudents = data.length;
+            const isCompletedOrRedeemed = p => p.progress?.toLowerCase() === 'completed' || p.completionStatus?.toLowerCase() === 'redeemed';
+
+            const eligibleForSwags = data.filter(isCompletedOrRedeemed).length;
+            
+            const activeStudents = data.filter(p => {
+                const progressValue = parseInt(p.progress);
+                return (p.skillBadges > 0 || p.arcadeGames > 0 || (!isNaN(progressValue) && progressValue > 0));
+            }).length;
+
+            document.getElementById('admin-swag-eligible-count').textContent = eligibleForSwags;
+            document.getElementById('admin-active-students-count').textContent = activeStudents;
+            document.getElementById('admin-total-participants-count').textContent = totalStudents;
+
+            
+            const completedStudents = data.filter(isCompletedOrRedeemed);
+            const tbody = document.getElementById('completed-participant-list');
+            tbody.innerHTML = '';
+            
+            if (completedStudents.length === 0) {
+                tbody.innerHTML = '<tr id="completed-loading-row"><td colspan="6" class="text-center py-4 text-gray-500">No students have completed the syllabus yet.</td></tr>';
+                return;
+            }
+
+            completedStudents.forEach((p, index) => {
+                const row = document.createElement('tr');
+                const rowClass = index % 2 === 0 ? 'bg-green-900/40 hover:bg-green-900/60' : 'bg-green-900/50 hover:bg-green-900/70';
+                
+                row.className = `transition duration-150 ${rowClass}`;
+                
+                const profileButton = p.publicProfileUrl && p.publicProfileUrl.startsWith('http') 
+                    ? `<a href="${p.publicProfileUrl}" target="_blank" class="bg-purple-admin hover:bg-purple-admin/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs inline-flex items-center">
+                        View Profile
+                       </a>`
+                    : '<span class="text-gray-500 text-xs">Profile N/A</span>';
+                
+                const detailsButton = `
+                    <button class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs ml-2"
+                        onclick="viewDetails(${p.id})">
+                        View Details
+                    </button>
+                `;
+
+                row.innerHTML = `
+                    <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-300">${index + 1}</td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm font-medium">${p.name.toUpperCase()}</td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.skillBadges}</td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.arcadeGames}</td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.lastOnline}</td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm text-center">
+                        ${profileButton}
+                    </td>
+                    <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-center">
+                        ${detailsButton}
+                    </td>
+                `;
+
+
+
+
+
+                
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateProgressDistribution(data) {
+            const distribution = {
+                '0-25': 0,
+                '26-50': 0,
+                '51-75': 0,
+                '76-99': 0,
+                '100': 0
+            };
+
+            data.forEach(p => {
+                const progressValue = parseInt(p.completionStatus);
+                
+                if (p.progress?.toLowerCase() === 'completed' || progressValue === 100) {
+                    distribution['100']++;
+                } else if (!isNaN(progressValue)) {
+                    if (progressValue >= 0 && progressValue <= 25) {
+                        distribution['0-25']++;
+                    } else if (progressValue >= 26 && progressValue <= 50) {
+                        distribution['26-50']++;
+                    } else if (progressValue >= 51 && progressValue <= 75) {
+                        distribution['51-75']++;
+                    } else if (progressValue >= 76 && progressValue <= 99) {
+                        distribution['76-99']++;
+                    }
+                } else {
+                    distribution['0-25']++;
+                }
+            });
+
+            document.getElementById('progress-0-25').innerHTML = `
+                <div class="text-3xl font-bold text-red-400">${distribution['0-25']}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-2">0-25% Progress</div>
+            `;
+            
+            document.getElementById('progress-26-50').innerHTML = `
+                <div class="text-3xl font-bold text-orange-400">${distribution['26-50']}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-2">26-50% Progress</div>
+            `;
+            
+            document.getElementById('progress-51-75').innerHTML = `
+                <div class="text-3xl font-bold text-yellow-400">${distribution['51-75']}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-2">51-75% Progress</div>
+            `;
+            
+            document.getElementById('progress-76-99').innerHTML = `
+                <div class="text-3xl font-bold text-blue-400">${distribution['76-99']}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-2">76-99% Progress</div>
+            `;
+            
+            document.getElementById('progress-100').innerHTML = `
+                <div class="text-3xl font-bold text-green-400">${distribution['100']}</div>
+                <div class="text-xs text-gray-400 uppercase tracking-wider mt-2">100% Complete</div>
+            `;
+        }
+        
+        // --- Modal Functions ---
+
+        function createMessageBox() {
+            const boxHtml = `
+                <div id="message-box-overlay" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden transition-opacity duration-300 flex items-center justify-center p-4">
+                    <div class="bg-navy-card rounded-xl p-6 w-full max-w-md shadow-2xl transform scale-95 transition-transform duration-300">
+                        <h3 id="message-box-title" class="text-xl font-bold mb-4 border-b border-gray-700 pb-2"></h3>
+                        <div id="message-box-content" class="text-gray-300 mb-6 whitespace-pre-wrap max-h-96 overflow-y-auto pr-2 custom-scrollbar"></div>
+                        <button id="message-box-close" class="w-full bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 rounded-lg transition duration-200">Close</button>
+                    </div>
+                </div>`;
+            if (!document.getElementById('message-box-overlay')) document.body.insertAdjacentHTML('beforeend', boxHtml);
+        }
+        
+        function showMessageBox(title, content) {
+            const overlay = document.getElementById('message-box-overlay');
+            document.getElementById('message-box-title').textContent = title;
+            document.getElementById('message-box-content').innerHTML = content;
+            overlay.classList.remove('hidden', 'opacity-0');
+            overlay.classList.add('opacity-100');
+            document.getElementById('message-box-close').onclick = hideMessageBox;
+            overlay.onclick = e => { if (e.target === overlay) hideMessageBox(); };
+        }
+
+        function hideMessageBox() {
+            const overlay = document.getElementById('message-box-overlay');
+            overlay.classList.remove('opacity-100');
+            overlay.classList.add('opacity-0');
+            setTimeout(() => overlay.classList.add('hidden'), 300);
+        }
+
+        // --- Utility Functions ---
+
+        window.onload = function() {
+            createMessageBox();
+            fetchGoogleSheetData();
+        };
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
+
+        function toggleScrollToTopButton() {
+            const button = document.getElementById('scroll-to-top');
+            if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
+                button.classList.add('visible-scroll');
+            } else {
+                button.classList.remove('visible-scroll');
+            }
+        }
+
+        window.onscroll = function() {
+            toggleScrollToTopButton();
+        };
+    </script>
+</body>
+</html>
