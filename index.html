@@ -218,6 +218,19 @@
                 const response = await fetch(API_URL);
                 const rawText = await response.text();
                 participantsData = parseSheetData(rawText);
+
+                
+                participantsData.sort((a, b) => {
+                    const aStatus = parseFloat(a.completionStatus) || 0;
+                    const bStatus = parseFloat(b.completionStatus) || 0;
+                    return bStatus - aStatus; 
+                });
+
+                participantsData = participantsData.map((p, index) => ({
+                    ...p,
+                    id: index + 1
+                }));
+
                 filteredParticipantsData = participantsData; 
                 updateStats();
                 renderParticipants(filteredParticipantsData);
@@ -391,4 +404,5 @@
     </script>
 </body>
 </html>
+
 
