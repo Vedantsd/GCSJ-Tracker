@@ -127,7 +127,9 @@ if __name__ == "__main__":
                 #print(profile_data)
                 write_to_google_sheet("GCSJ Tracker", profile_data)
             except Exception as e:
+                print(e)
                 file2.write(url)
                 print('-------------------------------------------------')
+
 
 
