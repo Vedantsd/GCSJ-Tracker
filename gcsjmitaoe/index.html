@@ -219,6 +219,34 @@
             </table>
         </div>
 
+        <br>
+        <h3 class="text-xl font-semibold mb-4 text-cyan-400 border-b border-gray-700 pb-2 flex items-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-zap mr-2">
+                <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+            All Active Participants
+        </h3>
+
+        <div class="overflow-x-auto rounded-xl shadow-2xl mb-10">
+            <table class="min-w-full divide-y divide-gray-700">
+                <thead class="bg-cyan-700 text-white">
+                    <tr>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[5%]">#</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[25%]">Name</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[10%]">Badges</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[10%]">Games</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[10%]">Completion status</th>
+                        <th scope="col" class="px-3 py-3 text-left text-xs font-semibold uppercase tracking-wider w-[15%]">Last online</th>
+                        <th scope="col" class="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[15%]">Public profile</th>
+                        <th scope="col" class="px-3 py-3 text-center text-xs font-semibold uppercase tracking-wider w-[15%]">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="active-participant-list" class="divide-y divide-gray-800">
+                    <tr id="active-loading-row"><td colspan="8" class="text-center py-4 text-gray-500">Loading active data...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
     </div>
 
     <div id="message-box-overlay" class="fixed inset-0 bg-black bg-opacity-75 z-50 hidden transition-opacity duration-300 flex items-center justify-center p-4">
@@ -332,66 +360,115 @@
             const isCompletedOrRedeemed = p => p.progress?.toLowerCase() === 'completed' || p.completionStatus?.toLowerCase() === 'redeemed';
 
             const eligibleForSwags = data.filter(isCompletedOrRedeemed).length;
-            
-            const activeStudents = data.filter(p => {
+
+            const activeParticipants = data.filter(p => {
+                const progressString = String(p.progress || '');
+                const isCompleted = progressString.toLowerCase() === 'completed';
+                const isRedeemed = p.completionStatus?.toLowerCase() === 'redeemed';
+
                 const progressValue = parseInt(p.progress);
-                return (p.skillBadges > 0 || p.arcadeGames > 0 || (!isNaN(progressValue) && progressValue > 0));
-            }).length;
+                const hasActivity = p.skillBadges > 0 || p.arcadeGames > 0 || (!isNaN(progressValue) && progressValue > 0);
+
+                return isCompleted || isRedeemed || hasActivity;
+            });
+
+            const activeStudentsCount = activeParticipants.length; 
 
             document.getElementById('admin-swag-eligible-count').textContent = eligibleForSwags;
-            document.getElementById('admin-active-students-count').textContent = activeStudents;
+            document.getElementById('admin-active-students-count').textContent = activeStudentsCount;
             document.getElementById('admin-total-participants-count').textContent = totalStudents;
 
-            
-            const completedStudents = data.filter(isCompletedOrRedeemed);
-            const tbody = document.getElementById('completed-participant-list');
-            tbody.innerHTML = '';
-            
-            if (completedStudents.length === 0) {
-                tbody.innerHTML = '<tr id="completed-loading-row"><td colspan="6" class="text-center py-4 text-gray-500">No students have completed the syllabus yet.</td></tr>';
-                return;
+            const activeTbody = document.getElementById('active-participant-list');
+            activeTbody.innerHTML = ''; 
+
+            if (activeParticipants.length === 0) {
+                activeTbody.innerHTML = '<tr id="active-loading-row"><td colspan="8" class="text-center py-4 text-gray-500">No active participants found.</td></tr>';
+            } else {
+                activeParticipants.forEach((p, index) => {
+                    const row = document.createElement('tr');
+                    const rowClass = index % 2 === 0 ? 'bg-gray-800/40 hover:bg-gray-800/60' : 'bg-gray-800/50 hover:bg-gray-800/70';
+                    row.className = `transition duration-150 ${rowClass}`;
+
+                    const progressDisplay = isNaN(parseInt(p.completionStatus)) ? '0' : parseInt(p.completionStatus);
+                    
+                    const profileButton = p.publicProfileUrl && p.publicProfileUrl.startsWith('http') 
+                        ? `<a href="${p.publicProfileUrl}" target="_blank" class="bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs inline-flex items-center">
+                            View Profile
+                        </a>`
+                        : '<span class="text-gray-500 text-xs">Profile N/A</span>';
+
+                    const detailsButton = `
+                        <button class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs ml-2"
+                            onclick="viewDetails(${p.id})">
+                            View Details
+                        </button>
+                    `;
+
+                    row.innerHTML = `
+                        <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-300">${index + 1}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-cyan-400">${p.name.toUpperCase()}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.skillBadges}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.arcadeGames}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${progressDisplay}%</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.lastOnline}</td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm text-center">
+                            ${profileButton}
+                        </td>
+                        <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-center">
+                            ${detailsButton}
+                        </td>
+                    `;
+
+                    activeTbody.appendChild(row);
+                });
             }
 
-            completedStudents.forEach((p, index) => {
-                const row = document.createElement('tr');
-                const rowClass = index % 2 === 0 ? 'bg-green-900/40 hover:bg-green-900/60' : 'bg-green-900/50 hover:bg-green-900/70';
-                
-                row.className = `transition duration-150 ${rowClass}`;
-                
-                const profileButton = p.publicProfileUrl && p.publicProfileUrl.startsWith('http') 
-                    ? `<a href="${p.publicProfileUrl}" target="_blank" class="bg-purple-admin hover:bg-purple-admin/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs inline-flex items-center">
-                        View Profile
-                       </a>`
-                    : '<span class="text-gray-500 text-xs">Profile N/A</span>';
-                
-                const detailsButton = `
-                    <button class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs ml-2"
-                        onclick="viewDetails(${p.id})">
-                        View Details
-                    </button>
-                `;
+            const completedStudents = data.filter(isCompletedOrRedeemed);
+            const completedTbody = document.getElementById('completed-participant-list');
+            
+            if (completedTbody) {
+                completedTbody.innerHTML = '';
 
-                row.innerHTML = `
-                    <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-300">${index + 1}</td>
-                    <td class="px-3 py-3 whitespace-nowrap text-sm font-medium">${p.name.toUpperCase()}</td>
-                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.skillBadges}</td>
-                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.arcadeGames}</td>
-                    <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.lastOnline}</td>
-                    <td class="px-3 py-3 whitespace-nowrap text-sm text-center">
-                        ${profileButton}
-                    </td>
-                    <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-center">
-                        ${detailsButton}
-                    </td>
-                `;
+                if (completedStudents.length === 0) {
+                    completedTbody.innerHTML = '<tr id="completed-loading-row"><td colspan="7" class="text-center py-4 text-gray-500">No students have completed the syllabus yet.</td></tr>';
+                } else {
+                    completedStudents.forEach((p, index) => {
+                        const row = document.createElement('tr');
+                        const rowClass = index % 2 === 0 ? 'bg-green-900/40 hover:bg-green-900/60' : 'bg-green-900/50 hover:bg-green-900/70';
+                        
+                        row.className = `transition duration-150 ${rowClass}`;
+                        
+                        const profileButton = p.publicProfileUrl && p.publicProfileUrl.startsWith('http') 
+                            ? `<a href="${p.publicProfileUrl}" target="_blank" class="bg-purple-admin hover:bg-purple-admin/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs inline-flex items-center">
+                                View Profile
+                            </a>`
+                            : '<span class="text-gray-500 text-xs">Profile N/A</span>';
+                        
+                        const detailsButton = `
+                            <button class="bg-blue-gemini hover:bg-blue-gemini/80 text-white font-medium py-1 px-3 rounded-lg shadow-md transition duration-200 text-xs ml-2"
+                                onclick="viewDetails(${p.id})">
+                                View Details
+                            </button>
+                        `;
 
+                        row.innerHTML = `
+                            <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-gray-300">${index + 1}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm font-medium">${p.name.toUpperCase()}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.skillBadges}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.arcadeGames}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm text-gray-300">${p.lastOnline}</td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm text-center">
+                                ${profileButton}
+                            </td>
+                            <td class="px-3 py-3 whitespace-nowrap text-sm font-medium text-center">
+                                ${detailsButton}
+                            </td>
+                        `;
 
-
-
-
-                
-                tbody.appendChild(row);
-            });
+                        completedTbody.appendChild(row);
+                    });
+                }
+            }
         }
 
         function updateProgressDistribution(data) {
