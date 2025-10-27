@@ -6,15 +6,6 @@ import progress_calculator as pc
 from flask import Flask
 import os
 
-creds_env = os.getenv("GOOGLE_CREDS_JSON")
-if not creds_env:
-    cred_path = "credentials.json"
-else:
-    cred_path = "/tmp/credentials.json"
-    with open(cred_path, "w", encoding="utf-8") as f:
-        f.write(creds_env)
-
-
 def get_gcsb_profile_details(public_profile_url):
     if not public_profile_url.startswith("https://www.skills.google/public_profiles/"):
         raise ValueError("Please enter a valid public Google Cloud Skills Boost profile URL.")
@@ -62,7 +53,7 @@ def write_to_google_sheet(sheet_name, data):
         "https://www.googleapis.com/auth/spreadsheets",
         "https://www.googleapis.com/auth/drive"
     ]
-    creds = Credentials.from_service_account_file(cred_path, scopes=scopes)
+    creds = Credentials.from_service_account_file("credentials.json", scopes=scopes)
     client = gspread.authorize(creds)
     
     sheet = client.open(sheet_name).sheet1
@@ -130,6 +121,7 @@ if __name__ == "__main__":
                 print(e)
                 file2.write(url)
                 print('-------------------------------------------------')
+
 
 
 
