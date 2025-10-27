@@ -126,6 +126,8 @@ if __name__ == "__main__":
                 profile_data = get_gcsb_profile_details(profile_url)
                 #print(profile_data)
                 write_to_google_sheet("GCSJ Tracker", profile_data)
-            except Exception:
+            except Exception as e:
+                print(e)
                 file2.write(url)
                 print('-------------------------------------------------')
+
