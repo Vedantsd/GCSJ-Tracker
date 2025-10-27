@@ -47,7 +47,7 @@ def get_gcsb_profile_details(public_profile_url):
 # =============== WRITE TO GOOGLE SHEETS ===============
 def write_to_google_sheet(sheet_name, data):
 
-    if (data["percent"] == 0 or data["percent"] == 100): return
+    if (data["percent"] == 0): return
 
     scopes = [
         "https://www.googleapis.com/auth/spreadsheets",
@@ -121,6 +121,7 @@ if __name__ == "__main__":
                 print(e)
                 file2.write(url)
                 print('-------------------------------------------------')
+
 
 
 
