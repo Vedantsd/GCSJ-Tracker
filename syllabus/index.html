@@ -66,6 +66,8 @@
                 <li>Complete 1 Arcade Game (as specified in the confirmation e-mail).</li>
                 <li>Complete the Skill Badges and Arcade Game on or before <b>19-11-2025</b>.</li>
                 <li>Ensure your progress is Completed in the Tracker (takes up to 12 hours to update).</li>
+                <li>There will be 2 different Arcade Games for October and November, you are required to complete any 1.</li>
+                <li>Skill Badges completed other than those mentioned below will <b>NOT</b> add up to your progress.</li>
             </ul>
         </div>
         
@@ -76,8 +78,7 @@
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-award mr-2"><circle cx="12" cy="8" r="6"/><path d="M8.21 13.89 7 23l5-3 5 3-1.21-9.11"/></svg>
                     Required Skill Badges
                 </h2>
-                <ul id="skill-badges-list" class="list-disc list-inside space-y-3 text-gray-300 ml-4">
-                    </ul>
+                <ul id="skill-badges-list" class="list-disc list-inside space-y-3 text-gray-300 ml-4 "> </ul>
             </div>
 
             <div class="bg-navy-card p-6 rounded-xl shadow-lg border border-gray-700">
@@ -137,7 +138,9 @@
             badgesList.innerHTML = ''; 
             SYLLABUS_DATA.skillBadges.forEach(item => {
                 const listItem = document.createElement('li');
-                listItem.className = "flex items-center justify-between border-b border-gray-700 py-3";
+                
+                listItem.className = "flex items-center justify-between p-3 border-l-4 border-green-400 bg-gray-900 pl-4 transition duration-300 hover:bg-gray-800 rounded-lg";
+                
                 listItem.innerHTML = `
                     <span class="flex-grow">${item.name}</span>
                     ${createLinkAnchor(item.url)}
@@ -152,7 +155,7 @@
             gamesList.innerHTML = ''; 
             SYLLABUS_DATA.arcadeGames.forEach(item => {
                 const listItem = document.createElement('li');
-                listItem.className = "flex items-center justify-between py-3";
+                listItem.className = "flex items-center justify-between p-3 border-l-4 border-blue-400 bg-gray-900 pl-4 transition duration-300 hover:bg-gray-800 rounded-lg";
                 listItem.innerHTML = `
                     <span class="flex-grow">${item.name}</span>
                     ${createLinkAnchor(item.url)}
