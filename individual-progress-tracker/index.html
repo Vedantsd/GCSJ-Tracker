@@ -56,7 +56,7 @@
 
         <div class="bg-navy-card p-6 rounded-xl shadow-2xl mb-8">
             <p class="text-gray-300 mb-4 font-medium">Paste your public Google Cloud Skills Boost profile URL:</p>
-            <div class="flex flex-col sm:flex-row gap-3">
+            <div class="flex flex-col sm:flex-row gap-3 mb-4">
                 <input 
                     type="text" 
                     id="profileUrl" 
@@ -64,11 +64,16 @@
                     class="flex-grow py-3 px-4 bg-dark-navy border border-gray-700 rounded-lg focus:ring-blue-gemini focus:border-blue-gemini outline-none text-gray-100" 
                 />
                 <button 
-                    onclick="trackProgress()" 
+                    onclick="trackProgress(true)" 
                     class="py-3 px-6 bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold rounded-lg shadow-md transition duration-200 w-full sm:w-auto"
                 >
                     Check Progress
                 </button>
+            </div>
+
+            <div class="flex items-center mt-2">
+                <input type="checkbox" id="rememberMe" class="h-4 w-4 text-blue-gemini border-gray-600 rounded focus:ring-blue-gemini bg-dark-navy cursor-pointer">
+                <label for="rememberMe" class="ml-2 text-sm text-gray-400 cursor-pointer">Remember my profile URL</label>
             </div>
         </div>
 
@@ -107,6 +112,14 @@ const skillBadgeList = [
 async function trackProgress() {
     const url = document.getElementById("profileUrl").value.trim();
     const outputDiv = document.getElementById("output");
+
+    const rememberMeChecked = document.getElementById("rememberMe").checked;
+
+    if (rememberMeChecked) {
+        localStorage.setItem('gcsj_profile_url', url);
+    } else {
+        localStorage.removeItem('gcsj_profile_url');
+    }
 
     if (!url.startsWith("https://www.skills.google/public_profiles/")) {
         outputDiv.style.display = "block";
@@ -229,6 +242,22 @@ function calculateProgress(badges) {
 
     return { completed, arcadeGames: Math.min(1, arcadeGames), progressStatus, percent, completedBadges, completedGames };
 }
+
+function loadAndAutoTrack() {
+    const profileUrlInput = document.getElementById('profileUrl');
+    const rememberMeCheckbox = document.getElementById('rememberMe');
+    
+    const storedUrl = localStorage.getItem('gcsj_profile_url');
+
+    if (storedUrl) {
+        profileUrlInput.value = storedUrl;
+        rememberMeCheckbox.checked = true;
+        
+        trackProgress();
+    }
+}
+
+document.addEventListener('DOMContentLoaded', loadAndAutoTrack);
 </script>
 
 </body>
