@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GCSJ Individual Progress Tracker</title>
+    <link rel="icon" href="/src/cloud-logo.png" type="image/png">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            font-family: 'Inter', sans-serif;
+        }
+
+        .bg-dark-navy { background-color: #0d111c; }
+        .bg-navy-card { background-color: #161b22; }
+        .text-blue-gemini { color: #4285F4; }
+        .text-purple-admin { color: #9a67ea; } 
+        .bg-blue-header { background-color: #1d4ed8; }
+        .text-green-success { color: #10b981; }
+        .bg-list-item { background-color: #1f2937; } 
+
+
+        body {
+            background-color: #0d111c;
+        }
+        
+    </style>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'dark-navy': '#0d111c',
+                        'navy-card': '#161b22',
+                        'blue-gemini': '#4285F4',
+                        'purple-admin': '#9a67ea',
+                        'blue-header': '#1d4ed8',
+                        'green-success': '#10b981',
+                        'list-item': '#1f2937',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-dark-navy text-white min-h-screen">
+
+    <div id="app" class="max-w-3xl mx-auto p-4 md:p-8">
+
+        <header class="pb-6 border-b border-gray-700 mb-8 text-center">
+            <h1 class="text-2xl md:text-3xl font-bold flex items-center">
+                <span class="text-blue-gemini mr-2"><img src="/src/cloud-logo.png" alt="" width="50px" height="50px"></span> GCSJ Individual Progress Tracker
+            </h1>
+            <p class="text-gray-400 text-lg flex">Check your campaign progress in real-time.</p>
+        </header>
+
+        <div class="bg-navy-card p-6 rounded-xl shadow-2xl mb-8">
+            <p class="text-gray-300 mb-4 font-medium">Paste your public Google Cloud Skills Boost profile URL:</p>
+            <div class="flex flex-col sm:flex-row gap-3">
+                <input 
+                    type="text" 
+                    id="profileUrl" 
+                    placeholder="e.g., https://www.skills.google/public_profiles/..." 
+                    class="flex-grow py-3 px-4 bg-dark-navy border border-gray-700 rounded-lg focus:ring-blue-gemini focus:border-blue-gemini outline-none text-gray-100" 
+                />
+                <button 
+                    onclick="trackProgress()" 
+                    class="py-3 px-6 bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold rounded-lg shadow-md transition duration-200 w-full sm:w-auto"
+                >
+                    Check Progress
+                </button>
+            </div>
+        </div>
+
+        <div id="output" class="bg-navy-card p-6 rounded-xl shadow-2xl" style="display:none;">
+            </div>
+        
+        <p class="text-center text-xs text-gray-500 mt-6">
+            Note: Ensure your profile is set to "Public" for tracking to work. Data latency may occur.
+        </p>
+
+    </div>
+
+<script>
+const skillBadgeList = [
+    "The Basics of Google Cloud Compute",
+    "Get Started with Cloud Storage",
+    "Get Started with Pub/Sub",
+    "Get Started with API Gateway",
+    "Get Started with Looker",
+    "Get Started with Dataplex",
+    "Get Started with Google Workspace Tools",
+    "App Building with AppSheet",
+    "Develop with Apps Script and AppSheet",
+    "Build a Website on Google Cloud",
+    "Set Up a Google Cloud Network",
+    "Store, Process, and Manage Data on Google Cloud - Console",
+    "Cloud Run Functions: 3 Ways",
+    "App Engine: 3 Ways",
+    "Cloud Speech API: 3 Ways",
+    "Monitoring in Google Cloud",
+    "Analyze Speech and Language with Google APIs",
+    "Prompt Design in Vertex AI",
+    "Develop Gen AI Apps with Gemini and Streamlit"
+];
+
+async function trackProgress() {
+    const url = document.getElementById("profileUrl").value.trim();
+    const outputDiv = document.getElementById("output");
+
+    if (!url.startsWith("https://www.skills.google/public_profiles/")) {
+        outputDiv.style.display = "block";
+        outputDiv.innerHTML = `<p class="text-red-400 font-medium">⚠️ Please enter a valid Google Cloud Skills Boost public profile URL.</p>`;
+        return;
+    }
+
+    outputDiv.style.display = "block";
+    outputDiv.innerHTML = `<p class="text-blue-gemini font-medium flex items-center"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-loader-2 mr-2 animate-spin"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>Fetching profile details...</p>`;
+
+    try {
+        const proxyUrl = "https://api.allorigins.win/get?url=" + encodeURIComponent(url);
+        const response = await fetch(proxyUrl);
+        
+        if (!response.ok) throw new Error("Could not reach the proxy service.");
+
+        const data = await response.json();
+        if (!data.contents) throw new Error("Profile content is empty or private.");
+        
+        const html = data.contents;
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, "text/html");
+
+        const nameTag = doc.querySelector("h1");
+        const name = nameTag ? nameTag.textContent.trim() : "Participant Name Not Found";
+
+        const badgeElements = doc.querySelectorAll("div.profile-badge span");
+        const badges = Array.from(badgeElements).map(el => el.textContent.trim());
+
+        const { completed, arcadeGames, percent, completedBadges, completedGames, progressStatus } = calculateProgress(badges);
+
+        const statusColor = percent === 100 ? 'bg-green-success' : 'bg-yellow-500';
+        const statusText = percent === 100 ? 'COMPLETED 🏆' : 'IN PROGRESS...';
+        
+        const skillBadgesHtml = completedBadges.length > 0
+            ? completedBadges.map(b => `
+                <li class="flex items-center justify-between p-3 border-l-4 border-green-success bg-list-item transition duration-300 hover:bg-gray-800 rounded-lg shadow-md">
+                    <span class="flex-grow text-sm">${b}</span>
+                </li>
+            `).join('')
+            : '<li class="text-gray-500 text-sm p-3 border-l-4 border-gray-600 bg-dark-navy rounded-lg italic">No required skill badges completed yet.</li>';
+
+        const arcadeGamesHtml = completedGames.length > 0
+            ? completedGames.map(g => `
+                <li class="flex items-center justify-between p-3 border-l-4 border-purple-admin bg-list-item transition duration-300 hover:bg-gray-800 rounded-lg shadow-md">
+                    <span class="flex-grow text-sm">${g}</span>
+                </li>
+            `).join('')
+            : '<li class="text-gray-500 text-sm p-3 border-l-4 border-gray-600 bg-dark-navy rounded-lg italic">No required arcade games completed yet.</li>';
+        
+
+        outputDiv.innerHTML = `
+            <h2 class="text-2xl font-bold text-purple-admin mb-4">${name.toUpperCase()}</h2>
+
+            <div class="w-full text-center py-4 rounded-lg font-extrabold text-xl mb-6 ${statusColor} text-white shadow-xl">
+                <span class="tracking-widest">${statusText}</span>
+            </div>
+
+            <div class="grid grid-cols-2 gap-4 text-center mb-8">
+                <div class="p-3 bg-dark-navy rounded-lg">
+                    <p class="text-xl font-bold text-green-success">${completed} / 19</p>
+                    <p class="text-sm text-gray-400">Skill Badges</p>
+                </div>
+                <div class="p-3 bg-dark-navy rounded-lg">
+                    <p class="text-xl font-bold text-purple-admin">${arcadeGames} / 1</p>
+                    <p class="text-sm text-gray-400">Arcade Games</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="p-3">
+                    <p class="text-lg font-semibold text-green-success mb-3 border-b border-gray-700 pb-2">Skill Badge List</p>
+                    <ul class="text-white space-y-3">
+                        ${skillBadgesHtml}
+                    </ul>
+                </div>
+
+                <div class="p-3">
+                    <p class="text-lg font-semibold text-purple-admin mb-3 border-b border-gray-700 pb-2">Arcade Games Completed</p>
+                    <ul class="text-white space-y-3">
+                        ${arcadeGamesHtml}
+                    </ul>
+                </div>
+            </div>
+        `;
+    } catch (error) {
+        console.error(error);
+        outputDiv.innerHTML = `<p class="text-red-400 font-medium">❌ Error fetching data: ${error.message}. Ensure your profile is public and the URL is correct.</p>`;
+    }
+}
+
+function calculateProgress(badges) {
+    let completed = 0, arcadeGames = 0;
+    let completedBadges = [], completedGames = [];
+    const totalRequired = 20; 
+
+    for (let badge of badges) {
+        if (skillBadgeList.includes(badge)) {
+            completed++;
+            completedBadges.push(badge);
+        }
+
+        if (badge.includes("Level 3")) {
+            if (arcadeGames < 1) { 
+                arcadeGames = 1;
+            }
+            completedGames.push(badge);
+        }
+    }
+
+    const progressCount = completed + Math.min(1, arcadeGames); 
+    const percent = Math.min(100, Math.round((progressCount / totalRequired) * 100));
+    
+    let progressStatus = "Pending";
+    if (percent === 100) {
+        progressStatus = "COMPLETED! 🏆";
+    } else if (percent > 0) {
+        progressStatus = "In Progress...";
+    }
+
+    return { completed, arcadeGames: Math.min(1, arcadeGames), progressStatus, percent, completedBadges, completedGames };
+}
+</script>
+
+</body>
+</html>
