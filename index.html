@@ -178,6 +178,21 @@
         </svg>
     </button>
 
+    <div id="progress-popup" class="fixed bottom-6 right-6 bg-navy-card border border-blue-gemini rounded-2xl shadow-2xl p-5 w-80 text-white z-50 transform transition-all duration-500 opacity-0 translate-y-5">
+        <h3 class="text-lg font-semibold text-blue-gemini mb-2">⚡ Track Your Progress Instantly!</h3>
+        <p class="text-sm text-gray-300 mb-3">
+            Checkout our <span class="text-green-400 font-semibold">Individual Progress Tracker</span> to:
+        </p>
+        <ul class="list-disc list-inside text-gray-400 text-sm mb-4 space-y-1">
+            <li>Avoid the 2 hour wait.</li>
+            <li>Monitor your progress anytime, anywhere</li>    
+        </ul>
+        <a href="https://www.gcsj-tracker.tech/individual-progress-tracker" target="_blank" class="block text-center bg-blue-gemini hover:bg-blue-gemini/80 text-white font-semibold py-2 rounded-lg transition duration-300">
+            Check your progress Live 🚀
+        </a>
+        <button id="close-progress-popup" class="absolute top-2 right-2 text-gray-400 hover:text-gray-200 transition"> ✕ </button>
+    </div>
+
     <script>
         const SHEET_ID = '1ugTNMqMcSP5TnraNffo95MKcmYx6E6sMGlcNNFWvVe8'; 
         const SHEET_NAME = 'Sheet1'; 
@@ -401,9 +416,24 @@
         window.onscroll = function() {
             toggleScrollToTopButton();
         };
+
+         window.addEventListener('load', () => {
+            const popup = document.getElementById('progress-popup');
+            setTimeout(() => {
+                popup.classList.remove('opacity-0', 'translate-y-5');
+                popup.classList.add('opacity-100', 'translate-y-0');
+            }, 2000);
+        });
+
+        document.getElementById('close-progress-popup').addEventListener('click', () => {
+            const popup = document.getElementById('progress-popup');
+            popup.classList.add('opacity-0', 'translate-y-5');
+            setTimeout(() => popup.style.display = 'none', 300);
+        });
     </script>
 </body>
 </html>
+
 
 
 
