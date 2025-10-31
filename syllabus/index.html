@@ -152,19 +152,20 @@
                 badgesList.lastChild.classList.remove('border-b');
             }
 
-            gamesList.innerHTML = ''; 
-            SYLLABUS_DATA.arcadeGames.forEach(item => {
-                const listItem = document.createElement('li');
-                listItem.className = "flex items-center justify-between p-3 border-l-4 border-blue-400 bg-gray-900 pl-4 transition duration-300 hover:bg-gray-800 rounded-lg";
-                listItem.innerHTML = `
-                    <span class="flex-grow">${item.name}</span>
-                    ${createLinkAnchor(item.url)}
-                `;
-                gamesList.appendChild(listItem);
-            });
+            // gamesList.innerHTML = ''; 
+            // SYLLABUS_DATA.arcadeGames.forEach(item => {
+            //     const listItem = document.createElement('li');
+            //     listItem.className = "flex items-center justify-between p-3 border-l-4 border-blue-400 bg-gray-900 pl-4 transition duration-300 hover:bg-gray-800 rounded-lg";
+            //     listItem.innerHTML = `
+            //         <span class="flex-grow">${item.name}</span>
+            //         ${createLinkAnchor(item.url)}
+            //     `;
+            //     gamesList.appendChild(listItem);
+            // });
         }
 
         document.addEventListener('DOMContentLoaded', renderSyllabusLists);
     </script>
 </body>
 </html>
+
